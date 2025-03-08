@@ -1,4 +1,4 @@
-"""class for testing the regsiter_order method"""
+"""class for testing the register_order method"""
 import unittest
 from uc3m_money import AccountManager
 from uc3m_money import AccountManagementException
