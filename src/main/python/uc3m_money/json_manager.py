@@ -19,11 +19,12 @@ class JsonManager:
             with open(JSON_FILES_PATH+self.path, "r", encoding="utf-8", newline="") as file:
                 data = json.load(file)
         except FileNotFoundError:
-            data = {}
-        except json.JSONDecodeError: as exception:
+            data = []
+        except json.JSONDecodeError as exception:
             raise AccountManagmentException ("ERROR: FORMATO JSON INCORRECTO.") from exception
         return data
-    
+
+
 
     def write_json(self, data):
         try:

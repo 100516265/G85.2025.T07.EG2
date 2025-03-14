@@ -1,7 +1,11 @@
-"""Module
+"""Module"""
+
 from .account_management_exception import AccountManagementException
 from .transfer_request import TransferRequest
-"""
+from .json_manager import JsonManager
+import hashlib
+import _md5
+
 
 class AccountManager:
     """Class for providing the methods for managing the orders"""
@@ -32,10 +36,8 @@ class AccountManager:
 
     @staticmethod
     def validate_concept(concept: str) ->bool:
+        return isinstance(concept, str) and (10<= len(concept) <= 30)
 
-        if(not isinstance(concept, str)
-            or not (10<= len(concept) <= 30)):
-            return False
 
 
     @staticmethod
@@ -58,3 +60,50 @@ class AccountManager:
         if (not isinstance(amount, float))\
             or not (10.00 <= amount <= 10000.00):
             return False
+
+
+    def transfer_request(self, from_iban: str, to_iban: str,transfer_concept: str,
+                        transfer_type: str, transfer_date: str, transfer_amount: float):
+
+        if not self.validate_iban(from_iban):
+            raise AccountManagementException("Excepción: Número de IBAN inválido. ")
+
+        if not self.validate_iban(to_iban):
+            raise AccountManagementException("Excepción: Número de IBAN inválido. ")
+
+        if not self.validate_concept(transfer_concept):
+            raise AccountManagementException("Excepción: concept inválido ")
+
+        if not self.validate_type(transfer_type):
+            raise AccountManagementException("Excepción: type inválido ")
+
+        if not self.validate_date(transfer_date):
+            raise AccountManagementException("Excepción: date inválido ")
+
+        if not self.validate_amount(transfer_amount):
+            raise AccountManagementException("Excepción: amount inválido ")
+
+
+        tr = TransferRequest(from_iban, transfer_type, to_iban, transfer_concept, transfer_date, transfer_amount)
+
+        JSON_FILE_NAME = "transfer_requests.json"
+
+        json_manager = JsonManager(JSON_FILE_NAME)
+        data_list = json_manager.read_json()
+
+        for data in data_list:
+            if (data['from_iban'] == tr.from_iban and
+                data['to_iban'] == tr.to_iban and
+                data['transfer_concept'] == tr.transfer_concept and
+                data['transfer_type'] == tr.transfer_type and
+                data['transfer_date'] == tr.transfer_date and
+                data['transfer_amount'] == tr.transfer_amount):
+                raise AccountManagementException("Error, la transferencia ya existe")
+
+        data_list.append(tr.to_json())
+        json_manager.write_json(data_list)
+
+        return tr.transfer_code
+
+
+
