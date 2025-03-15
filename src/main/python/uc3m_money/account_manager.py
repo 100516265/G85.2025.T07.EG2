@@ -1,7 +1,6 @@
-"""Module
 from .account_management_exception import AccountManagementException
 from .transfer_request import TransferRequest
-"""
+
 
 class AccountManager:
     """Class for providing the methods for managing the orders"""
@@ -58,3 +57,17 @@ class AccountManager:
         if (not isinstance(amount, float))\
             or not (10.00 <= amount <= 10000.00):
             return False
+
+    def transfer_request(self, from_iban: str, to_iban: str, concept: str, amount: float, date: str, type: str) -> str:
+        # Create a TransferRequest instance
+        transfer = TransferRequest(
+            from_iban=from_iban,
+            transfer_type=type,
+            to_iban=to_iban,
+            transfer_concept=concept,
+            transfer_date=date,
+            transfer_amount=amount
+        )
+
+        # Return the transfer code (MD5 hash)
+        return transfer.transfer_code

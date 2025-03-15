@@ -36,6 +36,32 @@ class TransferRequest:
             "time_stamp": self.__time_stamp,
             "transfer_code": self.transfer_code
         }
+
+    def save_transfer(self):
+        """Save the current transfer to a JSON file only if it's valid"""
+        try:
+            # Validate the transfer before saving
+            if self.validate_transfer():
+                # Use JsonManager to read the existing data
+                json_manager = JsonManager("transfers.json")  # Specify the file path for transfers
+                transfers = json_manager.read_json()  # Get the current data from the JSON file
+
+                # Append the current transfer to the list of transfers
+                if "transfers" not in transfers:
+                    transfers["transfers"] = []
+
+                transfers["transfers"].append(self.to_json())
+
+                # Write the updated transfers data back to the file
+                json_manager.write_json(transfers)
+                print("Transfer saved successfully!")
+            else:
+                print("Transfer validation failed.")
+        except ValueError as ve:
+            print(f"Error: {ve}")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+
     @property
     def from_iban(self):
         """Sender's iban"""
