@@ -1,3 +1,5 @@
+import re
+from datetime import datetime
 from .account_management_exception import AccountManagementException
 from .transfer_request import TransferRequest
 
@@ -36,6 +38,10 @@ class AccountManager:
             or not (10<= len(concept) <= 30)):
             return False
 
+        if len(re.findall(r'[a-zA-Z]+', concept)) < 2:
+            return False
+        return True
+
 
     @staticmethod
     def validate_type(type: str) ->bool:
@@ -44,6 +50,7 @@ class AccountManager:
             return False
         if type == "ORDINARY" or "URGENT" or "INMEDIATE":
             return True
+        return False
 
     @staticmethod
     def validate_date(date: str) -> bool:
@@ -51,12 +58,30 @@ class AccountManager:
         if not isinstance(date, str):
             return False
 
+        try:
+            fecha_valida = datetime.strptime(date, "%d/%m/%Y")
+        except ValueError:
+            return False
+
+        hoy = datetime.today()
+        if fecha_valida < hoy:
+            return False
+        if not (1 <= fecha_valida.day <=31) or not (1<= fecha_valida.month <=12) or not (2025 <= fecha_valida.year <= 2050):
+            return False
+        return True
+
+
+
     @staticmethod
     def validate_amount(amount: str) -> bool:
 
         if (not isinstance(amount, float))\
             or not (10.00 <= amount <= 10000.00):
             return False
+
+        if round(amount,2 != amount):
+            return False
+        return True
 
     def transfer_request(self, from_iban: str, to_iban: str, concept: str, amount: float, date: str, type: str) -> str:
         # Create a TransferRequest instance
