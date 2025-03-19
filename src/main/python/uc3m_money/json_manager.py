@@ -25,7 +25,6 @@ class JsonManager:
         return data
 
 
-
     def write_json(self, data):
         try:
             with open(JSON_FILES_PATH + self.path, "w", encoding="utf-8", newline="") as file:

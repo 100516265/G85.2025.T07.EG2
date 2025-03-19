@@ -2,7 +2,9 @@ import re
 from datetime import datetime
 from .account_management_exception import AccountManagementException
 from .transfer_request import TransferRequest
-
+from .json_manager import JsonManager
+import hashlib
+import _md5
 
 class AccountManager:
     """Class for providing the methods for managing the orders"""
@@ -73,10 +75,9 @@ class AccountManager:
 
 
     @staticmethod
-    def validate_amount(amount: str) -> bool:
+    def validate_amount(amount: float) -> bool:
 
-        if (not isinstance(amount, float))\
-            or not (10.00 <= amount <= 10000.00):
+        if (not isinstance(amount, float)) or not (10.00 <= amount <= 10000.00):
             return False
 
         if round(amount,2 != amount):
@@ -85,6 +86,25 @@ class AccountManager:
 
     def transfer_request(self, from_iban: str, to_iban: str, concept: str, amount: float, date: str, type: str) -> str:
         # Create a TransferRequest instance
+        #VALIDACIONES
+        if not self.validate_iban(from_iban):
+            raise AccountManagementException("Excepción: Número de IBAN inválido. ")
+
+        if not self.validate_iban(to_iban):
+            raise AccountManagementException("Excepción: Número de IBAN inválido. ")
+
+        if not self.validate_concept(concept):
+            raise AccountManagementException("Excepción: concept inválido ")
+
+        if not self.validate_type(type):
+            raise AccountManagementException("Excepción: type inválido ")
+
+        if not self.validate_date(date):
+            raise AccountManagementException("Excepción: date inválido ")
+
+        if not self.validate_amount(amount):
+            raise AccountManagementException("Excepción: amount inválido ")
+
         transfer = TransferRequest(
             from_iban=from_iban,
             transfer_type=type,
@@ -94,5 +114,17 @@ class AccountManager:
             transfer_amount=amount
         )
 
+        #SI YA EXISTE
+        json_manager = JsonManager("transfers.json")
+        data_list = json_manager.read_json()
+        for data in data_list:
+            if (data['from_iban'] == transfer.from_iban and
+                    data['to_iban'] == transfer.to_iban and
+                    data['transfer_concept'] == transfer.transfer_concept and
+                    data['transfer_type'] == transfer.transfer_type and
+                    data['transfer_date'] == transfer.transfer_date and
+                    data['transfer_amount'] == transfer.transfer_amount):
+                    raise AccountManagementException("Error, la transferencia ya existe")
+        transfer.save_transfer()
         # Return the transfer code (MD5 hash)
         return transfer.transfer_code

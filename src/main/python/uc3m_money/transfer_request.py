@@ -3,6 +3,9 @@ import hashlib
 import json
 from datetime import datetime, timezone
 
+from uc3m_money.json_manager import JsonManager
+
+
 class TransferRequest:
     """Class representing a transfer request"""
     def __init__(self,
