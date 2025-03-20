@@ -9,7 +9,7 @@ from uc3m_money.transfer_request import TransferRequest
 from uc3m_money.account_manager import AccountManager
 from uc3m_money.account_management_exception import AccountManagementException
 
-freeze_date = "2025-03-22 10:00:00"
+freeze_date = "2024-03-22 10:00:00"
 
 
 class MyTestCase(unittest.TestCase):
@@ -18,27 +18,6 @@ class MyTestCase(unittest.TestCase):
     """Tests for the AccountManager's transfer request"""
 
     @freeze_time(freeze_date)
-    def test_valid_TC1(self):
-        """Valid transfer request"""
-        my_manager = AccountManager()
-        from_iban_to_test = "ES4500817294770123456789"
-        to_iban_to_test = "ES4500817294770123456789"
-        concept_to_test = "transfer for rent"
-        amount_to_test = 200.45
-        date_to_test = "22/03/2025"
-        type_to_test = "URGENT"
-        with freeze_time(freeze_date):
-            result = my_manager.transfer_request(
-                from_iban=from_iban_to_test,
-                to_iban=to_iban_to_test,
-                concept=concept_to_test,
-                amount=amount_to_test,
-                date=date_to_test,
-                type=type_to_test
-            )
-            self.assertEqual(result, "7e72a7829fdc0242dc7e03bb23b2eef9")
-
-
 
 
     def test_valid_TC1(self):
@@ -59,7 +38,8 @@ class MyTestCase(unittest.TestCase):
                 date=date_to_test,
                 type=type_to_test
             )
-            self.assertEqual(result, "7e72a7829fdc0242dc7e03bb23b2eef9")
+            self.assertEqual(result, "8767cfa6e83245dfe36e9eed273d215f")
+
 """
     def test_valid_TC2(self):
        

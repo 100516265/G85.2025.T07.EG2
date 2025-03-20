@@ -80,10 +80,9 @@ class AccountManager:
         if (not isinstance(amount, float)) or not (10.00 <= amount <= 10000.00):
             return False
 
-        if round(amount,2 != amount):
-            return False
-        return True
+        return len(str(amount).split(".")[1] ) <= 2
 
+    @staticmethod
     def transfer_request(self, from_iban: str, to_iban: str, concept: str, amount: float, date: str, type: str) -> str:
         # Create a TransferRequest instance
         #VALIDACIONES

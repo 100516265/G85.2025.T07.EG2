@@ -3,7 +3,8 @@ import hashlib
 import json
 from datetime import datetime, timezone
 
-from uc3m_money.json_manager import JsonManager
+from .json_manager import JsonManager
+from .account_manager import AccountManager
 
 
 class TransferRequest:
@@ -44,7 +45,8 @@ class TransferRequest:
         """Save the current transfer to a JSON file only if it's valid"""
         try:
             # Validate the transfer before saving
-            if self.validate_transfer():
+            my_manager=AccountManager.transfer_request()
+            if my_manager:
                 # Use JsonManager to read the existing data
                 json_manager = JsonManager("transfers.json")  # Specify the file path for transfers
                 transfers = json_manager.read_json()  # Get the current data from the JSON file
