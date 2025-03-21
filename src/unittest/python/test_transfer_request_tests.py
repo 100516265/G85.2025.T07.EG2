@@ -11,16 +11,12 @@ from uc3m_money.account_management_exception import AccountManagementException
 
 freeze_date = "2024-03-22 10:00:00"
 
-
 class MyTestCase(unittest.TestCase):
     """class for testing the register_order method"""
-    global freeze_date
     """Tests for the AccountManager's transfer request"""
 
     @freeze_time(freeze_date)
-
-
-    def test_valid_TC1(self):
+    def test_valid_tc1(self):
         """Valid transfer request"""
         my_manager = AccountManager()
         from_iban_to_test = "ES4500817294770123456789"
@@ -38,9 +34,10 @@ class MyTestCase(unittest.TestCase):
                 date=date_to_test,
                 type=type_to_test
             )
-            self.assertEqual(result, "8767cfa6e83245dfe36e9eed273d215f")
+            self.assertEqual(result, "2bbb9b4a9d23dcbe14c97b7fdb7f43f7")
 
-"""
+
+    @freeze_time(freeze_date)
     def test_valid_TC2(self):
        
         my_manager = AccountManager()
@@ -59,8 +56,9 @@ class MyTestCase(unittest.TestCase):
                 date=date_to_test,
                 type=type_to_test
             )
-            self.assertEqual(result, "7e72a7829fdc0242dc7e03bb23b2eef9")
+            self.assertEqual(result, "1d80b7003a9cc4ecf98ceffbf989498e")
 
+    """
     def test_valid_TC3(self):
      
         my_manager = AccountManager()

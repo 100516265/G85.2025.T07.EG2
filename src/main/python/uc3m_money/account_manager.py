@@ -50,7 +50,7 @@ class AccountManager:
 
         if not isinstance(type, str):
             return False
-        if type == "ORDINARY" or "URGENT" or "INMEDIATE":
+        if type in ["ORDINARY", "URGENT", "INMEDIATE"]:
             return True
         return False
 
@@ -82,7 +82,6 @@ class AccountManager:
 
         return len(str(amount).split(".")[1] ) <= 2
 
-    @staticmethod
     def transfer_request(self, from_iban: str, to_iban: str, concept: str, amount: float, date: str, type: str) -> str:
         # Create a TransferRequest instance
         #VALIDACIONES
@@ -104,6 +103,7 @@ class AccountManager:
         if not self.validate_amount(amount):
             raise AccountManagementException("Excepción: amount inválido ")
 
+        # Crea una instancia de TransferRequest
         transfer = TransferRequest(
             from_iban=from_iban,
             transfer_type=type,
@@ -113,17 +113,28 @@ class AccountManager:
             transfer_amount=amount
         )
 
-        #SI YA EXISTE
-        json_manager = JsonManager("transfers.json")
-        data_list = json_manager.read_json()
-        for data in data_list:
-            if (data['from_iban'] == transfer.from_iban and
-                    data['to_iban'] == transfer.to_iban and
-                    data['transfer_concept'] == transfer.transfer_concept and
-                    data['transfer_type'] == transfer.transfer_type and
-                    data['transfer_date'] == transfer.transfer_date and
-                    data['transfer_amount'] == transfer.transfer_amount):
-                    raise AccountManagementException("Error, la transferencia ya existe")
-        transfer.save_transfer()
-        # Return the transfer code (MD5 hash)
+        # Leemos el json para ver si existe la transferencia
+        json_manager = JsonManager("RF1/transfer_requests.json")
+        datos_json = json_manager.read_json()
+        for datos in datos_json:
+            if (datos['transfer_code'] == transfer.transfer_code):
+                raise AccountManagementException("Error, la transferencia ya existe")
+
+        # Creando los datos a escribir en el archivo JSON
+        dict_json = {
+            'from_iban': transfer.from_iban,
+            'to_iban': transfer.to_iban,
+            'transfer_type': transfer.transfer_type,
+            'transfer_concept': transfer.transfer_concept,
+            'transfer_date': transfer.transfer_date,
+            'transfer_amount': transfer.transfer_amount,
+            'time_stamp': transfer.time_stamp,
+            'transfer_code': transfer.transfer_code
+        }
+
+        # Adjuntamos a los datos leidos del archivo JSON
+        datos_json.append(dict_json)
+        json_manager.write_json(datos_json)
+
+        # Devolvemos el hash MD5
         return transfer.transfer_code

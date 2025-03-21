@@ -3,9 +3,6 @@ import hashlib
 import json
 from datetime import datetime, timezone
 
-from .json_manager import JsonManager
-from .account_manager import AccountManager
-
 
 class TransferRequest:
     """Class representing a transfer request"""
@@ -19,7 +16,7 @@ class TransferRequest:
         self.__from_iban = from_iban
         self.__to_iban = to_iban
         self.__transfer_type = transfer_type
-        self.__concept = transfer_concept
+        self.__transfer_concept = transfer_concept
         self.__transfer_date = transfer_date
         self.__transfer_amount = transfer_amount
         justnow = datetime.now(timezone.utc)
@@ -27,45 +24,6 @@ class TransferRequest:
 
     def __str__(self):
         return "Transfer:" + json.dumps(self.__dict__)
-
-    def to_json(self):
-        """returns the object information in json format"""
-        return {
-            "from_iban": self.__from_iban,
-            "to_iban": self.__to_iban,
-            "transfer_type": self.__transfer_type,
-            "transfer_amount": self.__transfer_amount,
-            "transfer_concept": self.__concept,
-            "transfer_date": self.__transfer_date,
-            "time_stamp": self.__time_stamp,
-            "transfer_code": self.transfer_code
-        }
-
-    def save_transfer(self):
-        """Save the current transfer to a JSON file only if it's valid"""
-        try:
-            # Validate the transfer before saving
-            my_manager=AccountManager.transfer_request()
-            if my_manager:
-                # Use JsonManager to read the existing data
-                json_manager = JsonManager("transfers.json")  # Specify the file path for transfers
-                transfers = json_manager.read_json()  # Get the current data from the JSON file
-
-                # Append the current transfer to the list of transfers
-                if "transfers" not in transfers:
-                    transfers["transfers"] = []
-
-                transfers["transfers"].append(self.to_json())
-
-                # Write the updated transfers data back to the file
-                json_manager.write_json(transfers)
-                print("Transfer saved successfully!")
-            else:
-                print("Transfer validation failed.")
-        except ValueError as ve:
-            print(f"Error: {ve}")
-        except Exception as e:
-            print(f"An unexpected error occurred: {e}")
 
     @property
     def from_iban(self):
@@ -95,7 +53,7 @@ class TransferRequest:
 
     @property
     def transfer_amount(self):
-        """Property respresenting the transfer amount"""
+        """Property representing the transfer amount"""
         return self.__transfer_amount
     @transfer_amount.setter
     def transfer_amount(self, value):

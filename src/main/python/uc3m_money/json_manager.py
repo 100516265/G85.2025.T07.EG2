@@ -1,38 +1,41 @@
-import os
+from .account_management_exception import AccountManagementException
 from pathlib import Path
 import json
-
-from .account_management_exception import AccountManagementException
+import os
 
 
 class JsonManager:
-    def __init__(self, path, data=None):
+    def __init__(self, path):
         self.path = path
-        self.JSON_FILES_PATH = os.path.join(Path(__file__).resolve().parents[2], "JsonFiles/")
-        if data is not None:
-            self.write_json(data)
-        else:
-            self.read_json()
+        # Obteniendo ruta de JsonFiles de forma más sencilla mediante string
+        self.str_path = Path(__file__).resolve().parents[3] / "JsonFiles"
+        # Creando el string de la ruta del archivo json
+        self.json_path = self.str_path / path
 
     def read_json(self):
         try:
-            with open(self.JSON_FILES_PATH+self.path, "r", encoding="utf-8", newline="") as file:
-                data = json.load(file)
+            with open(self.json_path, "r", encoding="utf-8", newline="") as file:
+                datos_json = file.read().strip()
+                if not datos_json:
+                    return []
+                datos = json.loads(datos_json)
         except FileNotFoundError:
-            data = []
+            datos = []
         except json.JSONDecodeError as exception:
-            raise AccountManagementException ("ERROR: FORMATO JSON INCORRECTO.") from exception
-        return data
+            raise AccountManagementException("ERROR: FORMATO JSON INCORRECTO.") from exception
+        except Exception as exception:
+            raise AccountManagementException("ERROR: NO SE PUEDE LEER EL JSON.") from exception
+        return datos
 
 
-    def write_json(self, data):
+    def write_json(self, datos):
         try:
-            with open(self.JSON_FILES_PATH + self.path, "w", encoding="utf-8", newline="") as file:
-                json.dump(data, file, indent=2)
+            with open(self.json_path, "w", encoding="utf-8", newline="") as file:
+                json.dump(datos, file, indent=2)
         except FileNotFoundError as exception:
             raise AccountManagementException ("ERROR: ARCHIVO JSON DAÑADO O RUTA NO ENCONTRADA.") from exception
         except json.JSONDecodeError as exception:
             raise AccountManagementException ("ERROR: FORMATO JSON INCORRECTO.") from exception
         except Exception as exception:
             raise AccountManagementException ("ERROR: NO SE HA PODIDO ESCRIBIR EL JSON.") from exception
-        return data
+        return datos
