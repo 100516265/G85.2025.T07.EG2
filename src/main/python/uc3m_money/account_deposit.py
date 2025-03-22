@@ -1,8 +1,11 @@
 """Contains the class OrderShipping"""
 from datetime import datetime, timezone
 import hashlib
+from .json_manager import JsonManager
+from .account_management_exception import AccountManagementException
 
-class AccountDeposit():
+
+class AccountDeposit:
     """Class representing the information required for shipping of an order"""
 
     def __init__(self,
@@ -60,3 +63,34 @@ class AccountDeposit():
     def deposit_signature( self ):
         """Returns the sha256 signature of the date"""
         return hashlib.sha256(self.__signature_string().encode()).hexdigest()
+
+    @staticmethod
+    def deposit_request(input_file: str, storage_file: str) -> str:
+        """Processes a deposit request, reading from input and saving to storage"""
+        # Leyendo los archivos de entrada y salida
+        data = JsonManager(input_file).read_json()
+        json_salida = JsonManager(storage_file)
+
+        # Validar la estructura del JSON de entrada
+        if 'IBAN' not in data or 'AMOUNT' not in data:
+            raise AccountManagementException("Excepción: El JSON no tiene la estructura esperada.")
+
+        to_iban = data["IBAN"]
+        deposit_amount = data["AMOUNT"]
+
+        # Crear una instancia de AccountDeposit
+        try:
+            deposit = AccountDeposit(to_iban=to_iban, deposit_amount=deposit_amount)
+            deposit_signature = deposit.deposit_signature
+        except Exception as e:
+            raise AccountManagementException(f"Exception: Error al obtener el deposit_signature: {str(e)}")
+
+        # Convertir la transacción a formato JSON
+        transaction_data = deposit.to_json()
+
+        # Guardar la transacción
+        transactions = json_salida.read_json()
+        transactions.append(transaction_data)
+        json_salida.write_json(transactions)
+
+        return deposit_signature

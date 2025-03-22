@@ -1,11 +1,12 @@
 import json
 import re
+import hashlib
+import _md5
 from datetime import datetime
 from .account_management_exception import AccountManagementException
 from .transfer_request import TransferRequest
 from .json_manager import JsonManager
-import hashlib
-import _md5
+
 
 class AccountManager:
     """Class for providing the methods for managing the orders"""
@@ -108,8 +109,6 @@ class AccountManager:
             return
 
 
-
-
     def transfer_request(self, from_iban: str, to_iban: str, concept: str, amount: float, date: str, type: str) -> str:
         # Create a TransferRequest instance
         #VALIDACIONES
@@ -166,49 +165,3 @@ class AccountManager:
 
         # Devolvemos el hash MD5
         return transfer.transfer_code
-
-    @staticmethod
-    def deposit_request(input_file: str, storage_file: str) -> str:
-        # Leyendo los archivos de entrada y salida
-        json_entrada = JsonManager(input_file)
-        json_salida = JsonManager(storage_file)
-
-        # Leer datos de entrada
-        try:
-            data = json_entrada.read_json()
-        except FileNotFoundError:
-            raise AccountManagementException("Excetion: No se encuentra el archivo de datos.")
-        except json.JSONDecodeError:
-            raise AccountManagementException("Exception: El archivo no tiene formato JSON.")
-
-        #VALIDAR ESTRUCTURA IBAN
-        if 'IBAN' not in data or 'AMOUNT' not in data:
-            raise AccountManagementException("Excepción: El JSON no tiene la estructura esperada.")
-
-        to_iban = data["IBAN"]
-        deposit_amount = AccountManager.validate_amountRF2(data["AMOUNT"])
-
-
-        #VALIDA IBAN
-        if not AccountManager.validate_iban(to_iban):
-            raise AccountManagementException("Excepcion: Los datos del JSON no tienen valores válidos.")
-
-        if deposit_amount is None:
-            raise AccountManagementException("Excepción: Los datos del JSON no tienen valores válidos.")
-
-        # Crear instancia de AccountDeposit
-        try:
-            deposit = AccountDeposit(to_iban=to_iban, deposit_amount=deposit_amount)
-            deposit_signature = deposit.deposit_signature
-        except Exception:
-            raise AccountManagementException("Exception: Error de procesamiento interno al obtener el deposit_signature.")
-
-        transaction_data = deposit.to_json()
-
-        #Guarda la transaccion
-        transactions = json_salida.read_json()
-        transactions.append(transaction_data)
-
-        json_salida.write_json(transactions)
-
-        return deposit_signature

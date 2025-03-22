@@ -916,7 +916,7 @@ class MyTestCase(unittest.TestCase):
 
 
     @freeze_time(freeze_date)
-    def test_valid_TC36(self):
+    def test_invalid_TC36(self):
         my_manager = AccountManager()
         json_manager = JsonManager("RF1/transfer_requests.json")
         from_iban_to_test = "ES9121000418450200051332"
@@ -936,10 +936,6 @@ class MyTestCase(unittest.TestCase):
             )
             self.assertEqual(cm.exception.message, "Error, la transferencia ya existe")
             self.assertTrue(json_manager.comprobar_json(len(json_manager)),"La transferencia no válida ha modificado el JSON")
-
-
-
-
 
 
 if __name__ == '__main__':
