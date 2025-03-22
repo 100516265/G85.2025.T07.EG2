@@ -36,12 +36,22 @@ class AccountManager:
     @staticmethod
     def validate_concept(concept: str) ->bool:
 
+
         if(not isinstance(concept, str)
             or not (10<= len(concept) <= 30)):
             return False
+        #dividimos el concepto en palabras
+        palabras = concept.split()
 
-        if len(re.findall(r'[a-zA-Z]+', concept)) < 2:
+        #comprueba que sean dos o mas cadenas
+        if len(palabras) < 2:
             return False
+
+        #comprobamos que cada palabra solo tenga caracteres [a-zA-Z]
+        for palabra in palabras:
+            for char in palabra:
+                if not( 'a' <=char <= 'z' or 'A' <= char <= 'Z' ):
+                    return False
         return True
 
 
@@ -86,22 +96,22 @@ class AccountManager:
         # Create a TransferRequest instance
         #VALIDACIONES
         if not self.validate_iban(from_iban):
-            raise AccountManagementException("Excepción: Número de IBAN inválido. ")
+            raise AccountManagementException("Excepción: Los números de cuenta (from) recibidos no son válidos.")
 
         if not self.validate_iban(to_iban):
-            raise AccountManagementException("Excepción: Número de IBAN inválido. ")
+            raise AccountManagementException("Excepcion: Los números de cuenta (to) recibidos no son válidos.")
 
         if not self.validate_concept(concept):
-            raise AccountManagementException("Excepción: concept inválido ")
+            raise AccountManagementException("Excepción: El concepto no tiene un valor válido.")
 
         if not self.validate_type(type):
-            raise AccountManagementException("Excepción: type inválido ")
+            raise AccountManagementException("Excepción: El tipo de transferencia no es válido.")
 
         if not self.validate_date(date):
-            raise AccountManagementException("Excepción: date inválido ")
+            raise AccountManagementException("Excepción: La fecha de la transferencia no es válida.")
 
         if not self.validate_amount(amount):
-            raise AccountManagementException("Excepción: amount inválido ")
+            raise AccountManagementException("Excepción: La cantidad no es válida.")
 
         # Crea una instancia de TransferRequest
         transfer = TransferRequest(

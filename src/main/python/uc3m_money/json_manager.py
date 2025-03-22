@@ -39,3 +39,20 @@ class JsonManager:
         except Exception as exception:
             raise AccountManagementException ("ERROR: NO SE HA PODIDO ESCRIBIR EL JSON.") from exception
         return datos
+
+    #comprueba si esta bien registrado la transferencia
+    def bien_registrado(self, transfer_code):
+
+        transferencia = self.read_json()
+
+        for trans in transferencia:
+            if trans["transfer_code"] == transfer_code:
+                return True
+        return False
+
+    #Comprueba si se modifico el json,si no se guardo nada en el json
+    def comprobar_json(self, json_inicial):
+
+
+        json_final=len(self.read_json())
+        return json_final==json_inicial
