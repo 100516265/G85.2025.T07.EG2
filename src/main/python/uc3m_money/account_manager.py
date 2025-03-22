@@ -148,3 +148,39 @@ class AccountManager:
 
         # Devolvemos el hash MD5
         return transfer.transfer_code
+
+    @staticmethod
+    def deposit_request(input_file: str, storage_file: str) -> str
+        # Leyendo los archivos de entrada y salida
+        json_entrada = JsonManager(input_file)
+        json_salida = JsonManager(storage_file)
+
+        # Leer datos de entrada
+        data = json_entrada.read_json()
+
+        if 'to_iban' not in data or 'transfer_amount' not in data:
+            raise AccountManagementException("Excepción: El JSON debe contener los datos 'to_iban' y 'transfer_amount'.")
+
+        to_iban = data['to_iban']
+        deposit_amount = data['transfer_amount']
+
+        if not AccountManager.validate_iban(to_iban):
+            raise AccountManagementException("Excepción: Número de IBAN inválido.")
+
+        if not isinstance(deposit_amount, (int, float)) or deposit_amount <= 0:
+            raise AccountManagementException("Excepción: Monto inválido.")
+
+        # Crear instancia de AccountDeposit
+        deposit = AccountDeposit(to_iban=to_iban, deposit_amount=deposit_amount)
+
+        # Obteniendo la firma del deposito
+        deposit_signature = deposit.deposit_signature
+
+        # Procesando la transacción
+        transaction_data = deposit.to_json()
+        transactions = json_salida.read_json()
+        transactions.append(transaction_data)
+
+        json_salida.write_json(transactions)
+
+        return deposit_signature
