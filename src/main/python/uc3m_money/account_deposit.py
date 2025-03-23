@@ -66,49 +66,48 @@ class AccountDeposit:
         """Returns the sha256 signature of the date"""
         return hashlib.sha256(self.__signature_string().encode()).hexdigest()
 
+
     @staticmethod
     def validate_amountRF2(amount_rf2: str):
-
-        if (not isinstance(amount_rf2, str) or not amount_rf2.startswith("EUR")):
-            return
+        """Validates the amount format RF2 (e.g., EUR1234.56)"""
+        if not isinstance(amount_rf2, str) or not amount_rf2.startswith("EUR"):
+            raise AccountManagementException("Excepción: Los datos del JSON no tienen valores válidos.")
 
         cantidad = amount_rf2[3:]
         if "." not in cantidad:
-            return None
+            raise AccountManagementException("Excepción: Los datos del JSON no tienen valores válidos.")
 
         digitos = cantidad.split(".")
 
-        if len(digitos) != 2:
-            return None
+        if len(digitos) != 2 or not (digitos[0].isdigit() and digitos[1].isdigit()):
+            raise AccountManagementException("Excepción: Los datos del JSON no tienen valores válidos.")
 
-        if len(digitos[0]) != 4 or not digitos[0].isdigit():
-            return None
-
-        if len(digitos[1]) != 2 or not digitos[1].isdigit():
-            return None
+        if len(digitos[0]) != 4 or len(digitos[1]) != 2:
+            raise AccountManagementException("Excepción: Los datos del JSON no tienen valores válidos.")
 
         try:
             amount = float(cantidad)
             if amount < 0:
-                return None
+                raise AccountManagementException("Excepción: Los datos del JSON no tienen valores válidos.")
             return amount
         except ValueError:
-            return None
+            raise AccountManagementException("Excepción: Los datos del JSON no tienen valores válidos.")
 
     @staticmethod
     def deposit_into_account(input_file: str) -> str:
         """Processes a deposit request, reading from input and saving to storage"""
         # Leyendo el JSON deposit_request
         deposit_requests = JsonManager(input_file).read_json()
+
         if not isinstance(deposit_requests, list):
             raise AccountManagementException("Excepción: El JSON no tiene la estructura esperada.")
 
-       #leyendo el json de salida
+        # Leyendo el JSON de salida
         json_salida = JsonManager("RF2/deposit_store.json")
         deposit_json = json_salida.read_json()
 
         if not deposit_requests or deposit_requests == {}:
-            raise AccountManagementException("JSON vacío")
+            raise AccountManagementException("Excepción: JSON vacío.")
 
         for request in deposit_requests:
             if "IBAN" not in request or "AMOUNT" not in request:
@@ -117,30 +116,26 @@ class AccountDeposit:
             to_iban = request["IBAN"]
             deposit_amount = request["AMOUNT"]
 
-        # VALIDA IBAN
+        # Validar IBAN
         if not AccountManager.validate_iban(to_iban):
-            raise AccountManagementException("Excepcion: Los datos del JSON no tienen valores válidos.")
-
-        #VALIDA AMOUNT
-        deposit_amount = AccountDeposit.validate_amountRF2(deposit_amount)
-        if deposit_amount is None:
             raise AccountManagementException("Excepción: Los datos del JSON no tienen valores válidos.")
 
+        # Validar AMOUNT
+        deposit_amount = AccountDeposit.validate_amountRF2(deposit_amount)
 
-        # SI YA EXISTE LANZA EXCEPTION
+        # Validar si la transacción ya existe
         for datos in deposit_json:
             if datos["to_iban"] == to_iban and datos["deposit_amount"] == deposit_amount:
-                raise AccountManagementException("Error, la transacción ya existe")
+                raise AccountManagementException("Excepción: Error, la transacción ya existe.")
 
         # Crear una instancia de AccountDeposit
         try:
             deposit = AccountDeposit(to_iban=to_iban, deposit_amount=deposit_amount)
             deposit_signature = deposit.deposit_signature
         except Exception:
-            raise AccountManagementException("Exception: Error de procesamiento interno al obtener el deposit_signature.")
+            raise AccountManagementException("Excepción: Error de procesamiento interno al obtener el deposit_signature.")
 
-        #creando los datos a escribir en el archivo JSON
-
+        # Creando los datos a escribir en el archivo JSON
         dict_json = {
             "to_iban": deposit.to_iban,
             "deposit_amount": deposit.deposit_amount,
