@@ -94,19 +94,7 @@ class AccountManager:
 
         return len(str(amount).split(".")[1] ) <= 2
 
-    @staticmethod
-    def validate_amountRF2(amount_rf2: str):
 
-        if (not isinstance(amount_rf2, str) or not amount_rf2.startswith("EUR") ):
-            return
-
-        try:
-            amount = float(amount_rf2[4:])
-            if amount < 0:
-                return
-            return amount
-        except ValueError:
-            return
 
 
     def transfer_request(self, from_iban: str, to_iban: str, concept: str, amount: float, date: str, type: str) -> str:

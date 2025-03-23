@@ -1,9 +1,11 @@
 """Contains the class OrderShipping"""
 from datetime import datetime, timezone
 import hashlib
+from unicodedata import digit
+
 from .json_manager import JsonManager
 from .account_management_exception import AccountManagementException
-
+from .account_manager import AccountManager
 
 class AccountDeposit:
     """Class representing the information required for shipping of an order"""
@@ -65,32 +67,88 @@ class AccountDeposit:
         return hashlib.sha256(self.__signature_string().encode()).hexdigest()
 
     @staticmethod
-    def deposit_request(input_file: str, storage_file: str) -> str:
-        """Processes a deposit request, reading from input and saving to storage"""
-        # Leyendo los archivos de entrada y salida
-        data = JsonManager(input_file).read_json()
-        json_salida = JsonManager(storage_file)
+    def validate_amountRF2(amount_rf2: str):
 
-        # Validar la estructura del JSON de entrada
-        if 'IBAN' not in data or 'AMOUNT' not in data:
+        if (not isinstance(amount_rf2, str) or not amount_rf2.startswith("EUR")):
+            return
+
+        cantidad = amount_rf2[3:]
+        if "." not in cantidad:
+            return None
+
+        digitos = cantidad.split(".")
+
+        if len(digitos) != 2:
+            return None
+
+        if len(digitos[0]) != 4 or not digitos[0].isdigit():
+            return None
+
+        if len(digitos[1]) != 2 or not digitos[1].isdigit():
+            return None
+
+        try:
+            amount = float(cantidad)
+            if amount < 0:
+                return None
+            return amount
+        except ValueError:
+            return None
+
+    @staticmethod
+    def deposit_into_account(input_file: str) -> str:
+        """Processes a deposit request, reading from input and saving to storage"""
+        # Leyendo el JSON deposit_request
+        deposit_requests = JsonManager(input_file).read_json()
+        if not isinstance(deposit_requests, list):
             raise AccountManagementException("Excepción: El JSON no tiene la estructura esperada.")
 
-        to_iban = data["IBAN"]
-        deposit_amount = data["AMOUNT"]
+       #leyendo el json de salida
+        json_salida = JsonManager("RF2/deposit_store.json")
+        deposit_json = json_salida.read_json()
+
+        if not deposit_requests or deposit_requests == {}:
+            raise AccountManagementException("JSON vacío")
+
+        for request in deposit_requests:
+            if "IBAN" not in request or "AMOUNT" not in request:
+                raise AccountManagementException("Excepción: El JSON no tiene la estructura esperada.")
+
+            to_iban = request["IBAN"]
+            deposit_amount = request["AMOUNT"]
+
+        # VALIDA IBAN
+        if not AccountManager.validate_iban(to_iban):
+            raise AccountManagementException("Excepcion: Los datos del JSON no tienen valores válidos.")
+
+        #VALIDA AMOUNT
+        deposit_amount = AccountDeposit.validate_amountRF2(deposit_amount)
+        if deposit_amount is None:
+            raise AccountManagementException("Excepción: Los datos del JSON no tienen valores válidos.")
+
+
+        # SI YA EXISTE LANZA EXCEPTION
+        for datos in deposit_json:
+            if datos["to_iban"] == to_iban and datos["deposit_amount"] == deposit_amount:
+                raise AccountManagementException("Error, la transacción ya existe")
 
         # Crear una instancia de AccountDeposit
         try:
             deposit = AccountDeposit(to_iban=to_iban, deposit_amount=deposit_amount)
             deposit_signature = deposit.deposit_signature
-        except Exception as e:
-            raise AccountManagementException(f"Exception: Error al obtener el deposit_signature: {str(e)}")
+        except Exception:
+            raise AccountManagementException("Exception: Error de procesamiento interno al obtener el deposit_signature.")
 
-        # Convertir la transacción a formato JSON
-        transaction_data = deposit.to_json()
+        #creando los datos a escribir en el archivo JSON
 
-        # Guardar la transacción
-        transactions = json_salida.read_json()
-        transactions.append(transaction_data)
-        json_salida.write_json(transactions)
+        dict_json = {
+            "to_iban": deposit.to_iban,
+            "deposit_amount": deposit.deposit_amount,
+            "deposit_date": deposit.deposit_date,
+            "deposit_signature": deposit_signature
+        }
+
+        deposit_json.append(dict_json)
+        json_salida.write_json(deposit_json)
 
         return deposit_signature

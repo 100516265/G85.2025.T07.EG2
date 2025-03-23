@@ -49,10 +49,18 @@ class JsonManager:
             if trans["transfer_code"] == transfer_code:
                 return True
         return False
+    def bien_registrado_RF2(self, deposit_signature):
+
+        transferencia = self.read_json()
+
+        for trans in transferencia:
+            if trans["deposit_signature"] == deposit_signature:
+                return True
+        return False
 
     #Comprueba si se modifico el json,si no se guardo nada en el json
     def comprobar_json(self, json_inicial):
 
-
         json_final=len(self.read_json())
         return json_final==json_inicial
+

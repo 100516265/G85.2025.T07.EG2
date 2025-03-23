@@ -1,6 +1,8 @@
 [
   {
-      "IBAN": "ES4500817294770123456789",
-      "AMOUNT": 250.50
+    "to_iban": "ES4500817294770123456789",
+    "deposit_amount": 1200.23,
+    "deposit_date": 1711101600.0,
+    "deposit_signature": "0739a0f722bff82f1e0eca3e9e45bd450689f60a76b6cc6996136766bc7e6215"
   }
 ]
