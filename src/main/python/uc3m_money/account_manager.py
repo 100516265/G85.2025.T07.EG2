@@ -2,7 +2,7 @@ import json
 import re
 import hashlib
 import _md5
-from datetime import datetime
+from datetime import datetime, timezone
 from .account_management_exception import AccountManagementException
 from .transfer_request import TransferRequest
 from .json_manager import JsonManager
@@ -94,6 +94,61 @@ class AccountManager:
 
         return len(str(amount).split(".")[1] ) <= 2
 
+    @staticmethod
+    def calculate_balance(iban: str)->bool:
+
+        #VERIFICA EL IBAN
+
+        if not isinstance(iban, str):
+            return False
+
+
+        if not AccountManager.validate_iban(iban):
+            raise AccountManagementException("Excepción: La cadena de entrada no contiene un IBAN válido.")
+
+        transactions = JsonManager("RF3/transactions.json").read_json()
+        if transactions == []:
+            raise AccountManagementException("Excepción:Error de procesamiento interno al procesar el código")
+
+        saldo = 0
+
+        if transactions[0] == {}:
+            raise AccountManagementException("Excepcion: El IBAN no se encuentra en el fichero de movimiento")
+
+        iban_encontrado = False
+        for data in transactions:
+
+            if data["IBAN"] == iban:
+                if data["amount"][0] == "+":
+                    saldo = saldo + float(data["amount"][1:])
+                else:
+                    saldo = saldo - float(data["amount"][1:])
+                iban_encontrado = True
+
+        if not iban_encontrado:
+            raise AccountManagementException("Excepcion: El IBAN no se encuentra en el fichero de movimiento")
+
+        justnow = datetime.now(timezone.utc)
+            # Creando los datos a escribir en el archivo JSON
+        dict_json = {
+            'IBAN': iban,
+            'SALDO': saldo,
+            'FECHA ACTUAL': datetime.timestamp(justnow)
+        }
+
+        json_manager = JsonManager("RF3/saldos.json")
+        # Adjuntamos a los datos leidos del archivo JSON
+        json_manager.write_json(dict_json)
+
+    def balance_esperado(iban):
+        saldos = JsonManager("RF3/saldos.json")
+        json_manager = JsonManager(saldos).read_json()
+
+        balance = 0
+        for transaction in json_manager:
+            if transaction["IBAN"] == iban:
+                balance += transaction["amount"]
+        return balance
 
 
 
