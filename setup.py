@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 #   -*- coding: utf-8 -*-
+# pylint: skip-file
 #
 #   This file is part of PyBuilder
 #
