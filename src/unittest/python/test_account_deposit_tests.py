@@ -24,6 +24,7 @@ class TestAccountDeposit(unittest.TestCase):
     @freeze_time(FREEZE_DATE)
     def test_valid_tc1(self):
         """Test for the deposit_request method"""
+
         JsonManager(INPUT_FILE).delete()
         JsonManager(STORAGE_FILE).delete()
         json_entrada = JsonManager(INPUT_FILE)
@@ -39,7 +40,7 @@ class TestAccountDeposit(unittest.TestCase):
         ).hexdigest()
 
         result = AccountDeposit.deposit_into_account(INPUT_FILE)
-        print(result)
+
         self.assertEqual(result, expected_signature)
         self.assertTrue(json_salida.bien_registrado_rf2(result),
                         "La transferencia no se guardó correctamente")
@@ -141,6 +142,56 @@ class TestAccountDeposit(unittest.TestCase):
             AccountDeposit.deposit_into_account(INPUT_FILE)
         self.assertEqual(str(cm.exception),
                              "Excepción: El JSON no tiene la estructura esperada.")
+
+    @freeze_time(FREEZE_DATE)
+    def test_invalid_tc9(self):
+        """test with an invalid IBAN"""
+
+        json_entrada = JsonManager(INPUT_FILE)
+        json_entrada.write_json([{ "IBAN" : "ESABCD" , "AMOUNT" : "EUR1200.23" }])
+
+        with self.assertRaises(AccountManagementException) as cm:
+            AccountDeposit.deposit_into_account(INPUT_FILE)
+        self.assertEqual(str(cm.exception),
+                         "Excepción: Los datos del JSON no tienen valores válidos.")
+
+    @freeze_time(FREEZE_DATE)
+    def test_invalid_tc10(self):
+        """test with an invalid IBAN"""
+
+        json_entrada = JsonManager(INPUT_FILE)
+        json_entrada.write_json([{ "IBAN" : "ES45008172947701234567894500817294770123456789" ,
+                                    "AMOUNT" : "EUR1200.23" }])
+
+        with self.assertRaises(AccountManagementException) as cm:
+            AccountDeposit.deposit_into_account(INPUT_FILE)
+        self.assertEqual(str(cm.exception),
+                         "Excepción: Los datos del JSON no tienen valores válidos.")
+
+    @freeze_time(FREEZE_DATE)
+    def test_invalid_tc11(self):
+        """test with an invalid IBAN"""
+
+        json_entrada = JsonManager(INPUT_FILE)
+        json_entrada.write_json([{ "IBAN" : "ES" , "AMOUNT" : "EUR1200.23" }])
+
+        with self.assertRaises(AccountManagementException) as cm:
+            AccountDeposit.deposit_into_account(INPUT_FILE)
+        self.assertEqual(str(cm.exception),
+                         "Excepción: Los datos del JSON no tienen valores válidos.")
+
+
+    @freeze_time(FREEZE_DATE)
+    def test_invalid_tc11(self):
+        """test with an invalid IBAN"""
+
+        json_entrada = JsonManager(INPUT_FILE)
+        json_entrada.write_json([{ "IBAN" : "4500817294770123456789" , "AMOUNT" : "EUR1200.23" }])
+
+        with self.assertRaises(AccountManagementException) as cm:
+            AccountDeposit.deposit_into_account(INPUT_FILE)
+        self.assertEqual(str(cm.exception),
+                         "Excepción: Los datos del JSON no tienen valores válidos.")
 
 
 

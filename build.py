@@ -9,8 +9,9 @@ use_plugin("python.coverage")
 use_plugin("python.flake8")
 use_plugin("python.distutils")
 
-name = "G85.2025.T07.GE2.bis"
-default_task = "publish"
+
+name = "G85.2025.T07.GE2"
+default_task= "publish"
 
 
 @init
