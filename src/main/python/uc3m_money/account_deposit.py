@@ -1,11 +1,9 @@
 """Contains the class OrderShipping"""
-from datetime import datetime, timezone
 import hashlib
-from unicodedata import digit
-
-from .json_manager import JsonManager
-from .account_management_exception import AccountManagementException
-from .account_manager import AccountManager
+from datetime import datetime, timezone
+from uc3m_money.json_manager import JsonManager
+from uc3m_money.account_management_exception import AccountManagementException
+from uc3m_money.account_manager import AccountManager
 
 class AccountDeposit:
     """Class representing the information required for shipping of an order"""
@@ -66,84 +64,70 @@ class AccountDeposit:
         """Returns the sha256 signature of the date"""
         return hashlib.sha256(self.__signature_string().encode()).hexdigest()
 
-
-    @staticmethod
-    def validate_amountRF2(amount_rf2: str):
-        """Validates the amount format RF2 (e.g., EUR1234.56)"""
-        if not isinstance(amount_rf2, str) or not amount_rf2.startswith("EUR"):
-            raise AccountManagementException("Excepción: Los datos del JSON no tienen valores válidos.")
-
-        cantidad = amount_rf2[3:]
-        if "." not in cantidad:
-            raise AccountManagementException("Excepción: Los datos del JSON no tienen valores válidos.")
-
-        digitos = cantidad.split(".")
-
-        if len(digitos) != 2 or not (digitos[0].isdigit() and digitos[1].isdigit()):
-            raise AccountManagementException("Excepción: Los datos del JSON no tienen valores válidos.")
-
-        if len(digitos[0]) != 4 or len(digitos[1]) != 2:
-            raise AccountManagementException("Excepción: Los datos del JSON no tienen valores válidos.")
-
-        try:
-            amount = float(cantidad)
-            if amount < 0:
-                raise AccountManagementException("Excepción: Los datos del JSON no tienen valores válidos.")
-            return amount
-        except ValueError:
-            raise AccountManagementException("Excepción: Los datos del JSON no tienen valores válidos.")
-
     @staticmethod
     def deposit_into_account(input_file: str) -> str:
         """Processes a deposit request, reading from input and saving to storage"""
-        # Leyendo el JSON deposit_request
         deposit_requests = JsonManager(input_file).read_json()
-
-        if not isinstance(deposit_requests, list):
+        if not isinstance(deposit_requests, list) or not deposit_requests:
             raise AccountManagementException("Excepción: El JSON no tiene la estructura esperada.")
 
-        # Leyendo el JSON de salida
         json_salida = JsonManager("RF2/deposit_store.json")
         deposit_json = json_salida.read_json()
-
-        if not deposit_requests or deposit_requests == {}:
-            raise AccountManagementException("Excepción: JSON vacío.")
-
+        deposit_signature = ""
         for request in deposit_requests:
-            if "IBAN" not in request or "AMOUNT" not in request:
-                raise AccountManagementException("Excepción: El JSON no tiene la estructura esperada.")
+            if not isinstance(request, dict) or "IBAN" not in request or "AMOUNT" not in request:
+                raise AccountManagementException(
+                    "Excepción: El JSON no tiene la estructura esperada.")
 
             to_iban = request["IBAN"]
             deposit_amount = request["AMOUNT"]
 
-        # Validar IBAN
-        if not AccountManager.validate_iban(to_iban):
-            raise AccountManagementException("Excepción: Los datos del JSON no tienen valores válidos.")
+            if not AccountManager.validate_iban(to_iban):
+                raise AccountManagementException(
+                    "Excepción: Los datos del JSON no tienen valores válidos.")
 
-        # Validar AMOUNT
-        deposit_amount = AccountDeposit.validate_amountRF2(deposit_amount)
+            amount = validate_amount_rf2(deposit_amount)
 
-        # Validar si la transacción ya existe
-        for datos in deposit_json:
-            if datos["to_iban"] == to_iban and datos["deposit_amount"] == deposit_amount:
-                raise AccountManagementException("Excepción: Error, la transacción ya existe.")
+            if any(d["to_iban"] == to_iban and d["deposit_amount"] == amount for d in deposit_json):
+                raise AccountManagementException(
+                    "Excepción: Error, la transacción ya existe.")
 
-        # Crear una instancia de AccountDeposit
-        try:
-            deposit = AccountDeposit(to_iban=to_iban, deposit_amount=deposit_amount)
-            deposit_signature = deposit.deposit_signature
-        except Exception:
-            raise AccountManagementException("Excepción: Error de procesamiento interno al obtener el deposit_signature.")
+            try:
+                deposit = AccountDeposit(to_iban=to_iban, deposit_amount=amount)
+                deposit_signature = deposit.deposit_signature
+            except Exception as exception:
+                raise AccountManagementException(
+                    "Excepción: Error de procesamiento interno al obtener el deposit_signature.")\
+                    from exception
 
-        # Creando los datos a escribir en el archivo JSON
-        dict_json = {
-            "to_iban": deposit.to_iban,
-            "deposit_amount": deposit.deposit_amount,
-            "deposit_date": deposit.deposit_date,
-            "deposit_signature": deposit_signature
-        }
+            dict_json = {
+                "to_iban": deposit.to_iban,
+                "deposit_amount": deposit.deposit_amount,
+                "deposit_date": deposit.deposit_date,
+                "deposit_signature": deposit_signature
+            }
 
-        deposit_json.append(dict_json)
-        json_salida.write_json(deposit_json)
+            deposit_json.append(dict_json)
+            json_salida.write_json(deposit_json)
 
         return deposit_signature
+
+
+def validate_amount_rf2(amount_rf2: str):
+    """Validates the amount format RF2 (e.g., EUR1234.56)"""
+    try:
+        if not isinstance(amount_rf2, str) or not amount_rf2.startswith("EUR"):
+            raise ValueError
+        cantidad = amount_rf2[3:]
+        digitos = cantidad.split(".")
+        if len(digitos) != 2 or not (digitos[0].isdigit() and digitos[1].isdigit()):
+            raise ValueError
+        if len(digitos[0]) != 4 or len(digitos[1]) != 2:
+            raise ValueError
+        amount = float(cantidad)
+        if amount < 0:
+            raise ValueError
+        return amount
+    except ValueError as exception:
+        raise AccountManagementException(
+            "Excepción: Los datos del JSON no tienen valores válidos.") from exception

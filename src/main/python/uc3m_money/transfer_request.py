@@ -4,7 +4,7 @@ import json
 from datetime import datetime, timezone
 
 
-class TransferRequest:
+class TransferRequest: # pylint: disable=too-many-arguments
     """Class representing a transfer request"""
     def __init__(self,
                  from_iban: str,

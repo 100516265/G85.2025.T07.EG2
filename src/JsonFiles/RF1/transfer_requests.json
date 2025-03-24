@@ -1,0 +1,42 @@
+[
+  {
+    "from_iban": "ES9121000418450200051332",
+    "to_iban": "ES4500817294770123456789",
+    "transfer_type": "ORDINARY",
+    "transfer_concept": "text valid",
+    "transfer_date": "01/01/2025",
+    "transfer_amount": 10.0,
+    "time_stamp": 1711101600.0,
+    "transfer_code": "264e833dbab20a7840492a753af7301a"
+  },
+  {
+    "from_iban": "ES9121000418450200051332",
+    "to_iban": "ES4500817294770123456789",
+    "transfer_type": "URGENT",
+    "transfer_concept": "concept val",
+    "transfer_date": "02/02/2026",
+    "transfer_amount": 10.01,
+    "time_stamp": 1711101600.0,
+    "transfer_code": "edec2f7f43bb746f6819efff114d13b7"
+  },
+  {
+    "from_iban": "ES9121000418450200051332",
+    "to_iban": "ES4500817294770123456789",
+    "transfer_type": "INMEDIATE",
+    "transfer_concept": "transferencia inmediata viaje",
+    "transfer_date": "30/11/2049",
+    "transfer_amount": 9999.99,
+    "time_stamp": 1711101600.0,
+    "transfer_code": "f03535650dc76d640625f2f3414671bf"
+  },
+  {
+    "from_iban": "ES9121000418450200051332",
+    "to_iban": "ES4500817294770123456789",
+    "transfer_type": "ORDINARY",
+    "transfer_concept": "transfere compra semana pasada",
+    "transfer_date": "31/12/2050",
+    "transfer_amount": 400.3,
+    "time_stamp": 1711101600.0,
+    "transfer_code": "bdeb29173a5c8aaea92b8a9be0dbb03b"
+  }
+]
