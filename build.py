@@ -4,10 +4,12 @@ from pybuilder.core import use_plugin, init
 use_plugin("python.core")
 use_plugin("python.unittest")
 use_plugin("python.coverage")
+use_plugin("python.flake8")
+use_plugin("python.distutils")
 
 
-name = "G8X.2025.TYY.GE2"
-default_task = "publish"
+NAME = "G85.2025.T07.GE2"
+DEFAULT_TASK = "publish"
 
 
 @init

@@ -101,7 +101,7 @@ class AccountManager:
                 "Excepción: La cadena de entrada no contiene un IBAN válido.")
 
         transactions = JsonManager("RF3/transactions.json").read_json()
-        if not transactions:
+        if not transactions or not isinstance(transactions, list):
             raise AccountManagementException(
                 "Excepción:Error de procesamiento interno al procesar el código")
 
@@ -109,7 +109,7 @@ class AccountManager:
 
         if transactions[0] == {}:
             raise AccountManagementException(
-                "Excepción: El IBAN no se encuentra en el fichero de movimiento")
+                "Excepción: El IBAN no se encuentra en el fichero de movimientos")
 
         iban_encontrado = False
         for data in transactions:
@@ -123,7 +123,7 @@ class AccountManager:
 
         if not iban_encontrado:
             raise AccountManagementException(
-                "Excepcion: El IBAN no se encuentra en el fichero de movimiento")
+                "Excepción: El IBAN no se encuentra en el fichero de movimientos")
 
         justnow = datetime.now(timezone.utc)
             # Creando los datos a escribir en el archivo JSON
@@ -137,18 +137,6 @@ class AccountManager:
         # Adjuntamos a los datos leidos del archivo JSON
         json_manager.write_json(dict_json)
         return True
-
-    @staticmethod
-    def balance_esperado(iban):
-        """Calcula el saldo esperado de una cuenta"""
-        saldos = JsonManager("RF3/saldos.json")
-        json_manager = JsonManager(saldos).read_json()
-
-        balance = 0
-        for transaction in json_manager:
-            if transaction["IBAN"] == iban:
-                balance += transaction["amount"]
-        return balance
 
     # pylint: disable=too-many-arguments
     def transfer_request(self, from_iban: str, to_iban: str,

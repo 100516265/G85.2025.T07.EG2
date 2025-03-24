@@ -79,6 +79,10 @@ class AccountDeposit:
                 raise AccountManagementException(
                     "Excepción: El JSON no tiene la estructura esperada.")
 
+            if not request:
+                raise AccountManagementException(
+                    "Excepción: El JSON no tiene la estructura esperada.")
+
             to_iban = request["IBAN"]
             deposit_amount = request["AMOUNT"]
 

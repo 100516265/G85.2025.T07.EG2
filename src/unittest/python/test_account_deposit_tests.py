@@ -49,13 +49,11 @@ class TestAccountDeposit(unittest.TestCase):
         """Test with empty JSON object"""
 
         json_entrada = JsonManager(INPUT_FILE)
-        lectura = json_entrada.read_json()
-        lectura.append({})
-        json_entrada.write_json(lectura)
+        json_entrada.write_json([{}])
 
         with self.assertRaises(AccountManagementException) as cm:
             AccountDeposit.deposit_into_account(INPUT_FILE)
-        self.assertEqual(str(cm.exception), "Excepción: Error, la transacción ya existe.")
+        self.assertEqual(str(cm.exception), "Excepción: El JSON no tiene la estructura esperada.")
 
     @freeze_time(FREEZE_DATE)
     def test_invalid_tc2(self):
@@ -115,7 +113,36 @@ class TestAccountDeposit(unittest.TestCase):
         with self.assertRaises(AccountManagementException) as cm:
             AccountDeposit.deposit_into_account(INPUT_FILE)
         self.assertEqual(str(cm.exception),
+                         "Excepción: El JSON no tiene la estructura esperada.")
+
+
+
+    @freeze_time(FREEZE_DATE)
+    def test_invalid_tc7(self):
+        """Test with trailing comma"""
+
+        json_entrada = JsonManager(INPUT_FILE)
+        json_entrada.write_json(['{  : "ES4500817294770123456789" , "AMOUNT" : "EUR1200.23" }'])
+
+        with self.assertRaises(AccountManagementException) as cm:
+            AccountDeposit.deposit_into_account(INPUT_FILE)
+        self.assertEqual(str(cm.exception),
                              "Excepción: El JSON no tiene la estructura esperada.")
+
+
+    @freeze_time(FREEZE_DATE)
+    def test_invalid_tc8(self):
+        """test within comillas"""
+
+        json_entrada = JsonManager(INPUT_FILE)
+        json_entrada.write_json(['{"IBAN": "ES4500817294770123456789" , "AMOUNT": EUR1200.23"}'])
+
+        with self.assertRaises(AccountManagementException) as cm:
+            AccountDeposit.deposit_into_account(INPUT_FILE)
+        self.assertEqual(str(cm.exception),
+                             "Excepción: El JSON no tiene la estructura esperada.")
+
+
 
 if __name__ == "__main__":
     unittest.main()
