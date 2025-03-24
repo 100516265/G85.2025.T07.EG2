@@ -32,7 +32,8 @@ class JsonManager:
         except FileNotFoundError:
             datos = []
         except json.JSONDecodeError as exception:
-            raise AccountManagementException("ERROR: FORMATO JSON INCORRECTO.") from exception
+            raise AccountManagementException(
+                "Excepción: El archivo no tiene formato JSON.") from exception
         except Exception as exception:
             raise AccountManagementException("ERROR: NO SE PUEDE LEER EL JSON.") from exception
         return datos
@@ -46,10 +47,10 @@ class JsonManager:
                 json.dump(datos, file, indent=2)
         except FileNotFoundError as exception:
             raise AccountManagementException (
-                "ERROR: ARCHIVO JSON DAÑADO O RUTA NO ENCONTRADA.") from exception
+                "Excepción: No se encuentra el archivo de datos.") from exception
         except json.JSONDecodeError as exception:
             raise AccountManagementException (
-                "ERROR: FORMATO JSON INCORRECTO.") from exception
+                "Excepción: El archivo no tiene formato JSON.") from exception
         except Exception as exception:
             raise AccountManagementException (
                 "ERROR: NO SE HA PODIDO ESCRIBIR EL JSON.") from exception
@@ -79,7 +80,7 @@ class JsonManager:
             os.remove(self.json_path)
         except FileNotFoundError as exception:
             raise AccountManagementException(
-                "ERROR: ARCHIVO JSON NO ENCONTRADO.") from exception
+                "Excepción: No se encuentra el archivo de datos.") from exception
         except Exception as exception:
             raise AccountManagementException(
                 "ERROR: NO SE HA PODIDO BORRAR EL JSON.") from exception

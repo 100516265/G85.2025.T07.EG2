@@ -67,6 +67,7 @@ class AccountDeposit:
     @staticmethod
     def deposit_into_account(input_file: str) -> str:
         """Processes a deposit request, reading from input and saving to storage"""
+
         deposit_requests = JsonManager(input_file).read_json()
         if not isinstance(deposit_requests, list) or not deposit_requests:
             raise AccountManagementException("Excepción: El JSON no tiene la estructura esperada.")
@@ -79,9 +80,6 @@ class AccountDeposit:
                 raise AccountManagementException(
                     "Excepción: El JSON no tiene la estructura esperada.")
 
-            if not request:
-                raise AccountManagementException(
-                    "Excepción: El JSON no tiene la estructura esperada.")
 
             to_iban = request["IBAN"]
             deposit_amount = request["AMOUNT"]
@@ -91,10 +89,6 @@ class AccountDeposit:
                     "Excepción: Los datos del JSON no tienen valores válidos.")
 
             amount = validate_amount_rf2(deposit_amount)
-
-            if any(d["to_iban"] == to_iban and d["deposit_amount"] == amount for d in deposit_json):
-                raise AccountManagementException(
-                    "Excepción: Error, la transacción ya existe.")
 
             try:
                 deposit = AccountDeposit(to_iban=to_iban, deposit_amount=amount)

@@ -26,7 +26,7 @@ class TestJsonManager(unittest.TestCase):
 
         with self.assertRaises(AccountManagementException) as cm:
             json_manager.read_json()
-        self.assertEqual(str(cm.exception), "ERROR: FORMATO JSON INCORRECTO.")
+        self.assertEqual(str(cm.exception), "Excepción: El archivo no tiene formato JSON.")
         self.auto_eliminar()
 
     def test_case_tc3(self):
@@ -70,6 +70,34 @@ class TestJsonManager(unittest.TestCase):
         self.assertEqual(hash1, hash2)
         self.auto_eliminar()
 
+    def test_case_tc7(self):
+        """Verifica que bien_registrado_rf2 encuentra una firma"""
+        json_manager = JsonManager(TEST_JSON_FILE)
+
+        data = [{"deposit_signature": "123"}]
+        json_manager.write_json(data)
+        self.assertTrue(json_manager.bien_registrado_rf2("123"))
+        self.auto_eliminar()
+
+    def test_case_tc8(self):
+        """Verifica que bien_registrado_rf2 devuelve False si no encuentra la firma"""
+        json_manager = JsonManager(TEST_JSON_FILE)
+
+        data = [{"deposit_signature": "123"}]
+        json_manager.write_json(data)
+        self.assertFalse(json_manager.bien_registrado_rf2("cr7"))
+        self.auto_eliminar()
+
+
+    def test_case_tc9(self):
+        """Verifica escribir un JSON vacío"""
+        json_manager = JsonManager(TEST_JSON_FILE)
+
+        data = []
+        json_manager.write_json(data)
+        self.assertEqual(json_manager.read_json(), [])
+        self.auto_eliminar()
+
+
 if __name__ == "__main__":
     unittest.main()
-
