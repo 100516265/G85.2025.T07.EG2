@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="test_transfer_request_tests.MyTestCase-20250325152541" tests="36" file="test_transfer_request_tests.py" time="0.147" timestamp="2025-03-25T15:25:42" failures="0" errors="0" skipped="0">
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc10" time="0.019" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc11" time="0.004" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc12" time="0.003" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc13" time="0.004" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc14" time="0.003" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc15" time="0.003" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc16" time="0.003" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc17" time="0.004" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc18" time="0.004" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc19" time="0.004" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc20" time="0.003" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc21" time="0.003" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc22" time="0.003" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc23" time="0.004" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc24" time="0.007" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc25" time="0.004" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc26" time="0.004" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc27" time="0.003" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc28" time="0.003" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc29" time="0.003" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc30" time="0.003" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc31" time="0.003" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc32" time="0.003" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc33" time="0.003" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc34" time="0.004" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc35" time="0.003" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc36" time="0.004" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc5" time="0.004" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc6" time="0.004" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc7" time="0.003" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc8" time="0.003" timestamp="2025-03-25T15:25:41"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_invalid_tc9" time="0.003" timestamp="2025-03-25T15:25:42"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_valid_tc1" time="0.004" timestamp="2025-03-25T15:25:42"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_valid_tc2" time="0.004" timestamp="2025-03-25T15:25:42"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_valid_tc3" time="0.004" timestamp="2025-03-25T15:25:42"/>
+	<testcase classname="test_transfer_request_tests.MyTestCase" name="test_valid_tc4" time="0.004" timestamp="2025-03-25T15:25:42"/>
+</testsuite>

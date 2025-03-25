@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="test_json_manager_tests.TestJsonManager-20250325152541" tests="9" file="test_json_manager_tests.py" time="0.006" timestamp="2025-03-25T15:25:42" failures="0" errors="0" skipped="0">
+	<testcase classname="test_json_manager_tests.TestJsonManager" name="test_case_tc1" time="0.000" timestamp="2025-03-25T15:25:42"/>
+	<testcase classname="test_json_manager_tests.TestJsonManager" name="test_case_tc2" time="0.001" timestamp="2025-03-25T15:25:42"/>
+	<testcase classname="test_json_manager_tests.TestJsonManager" name="test_case_tc3" time="0.001" timestamp="2025-03-25T15:25:42"/>
+	<testcase classname="test_json_manager_tests.TestJsonManager" name="test_case_tc4" time="0.001" timestamp="2025-03-25T15:25:42"/>
+	<testcase classname="test_json_manager_tests.TestJsonManager" name="test_case_tc5" time="0.001" timestamp="2025-03-25T15:25:42"/>
+	<testcase classname="test_json_manager_tests.TestJsonManager" name="test_case_tc6" time="0.001" timestamp="2025-03-25T15:25:42"/>
+	<testcase classname="test_json_manager_tests.TestJsonManager" name="test_case_tc7" time="0.001" timestamp="2025-03-25T15:25:42"/>
+	<testcase classname="test_json_manager_tests.TestJsonManager" name="test_case_tc8" time="0.001" timestamp="2025-03-25T15:25:42"/>
+	<testcase classname="test_json_manager_tests.TestJsonManager" name="test_case_tc9" time="0.001" timestamp="2025-03-25T15:25:42"/>
+</testsuite>
