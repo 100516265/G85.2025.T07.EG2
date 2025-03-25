@@ -933,7 +933,7 @@ class MyTestCase(unittest.TestCase):
                             "La transferencia no válida ha modificado el JSON")
 
     @freeze_time(FREEZE_DATE)
-    def test_valid_tc36(self):
+    def test_invalid_tc36(self):
         """Invalid transfer request"""
         my_manager = AccountManager()
         before_hash = JsonManager(TRANSFER_FILE).generate_hash()
